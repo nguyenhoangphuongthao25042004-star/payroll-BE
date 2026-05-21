@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+
+model bac_luong {
+  id_bac_luong       String               @db.Char(5)
+  id_chuc_vu         String               @db.VarChar(5)
+  luong_p1           Decimal              @db.Decimal(15, 2)
+  ngay_ap_dung       DateTime             @db.Date
+  chuc_vu            chuc_vu              @relation(fields: [id_chuc_vu], references: [id_chuc_vu], onDelete: NoAction, onUpdate: NoAction)
+  quyet_dinh_nhan_su quyet_dinh_nhan_su[]
+
+  @@id([id_bac_luong, id_chuc_vu])
+}
+
+model chuc_vu {
+  id_chuc_vu  String      @id @db.VarChar(5)
+  ten_chuc_vu String      @db.VarChar(100)
+  bac_luong   bac_luong[]
+}
+
+model moi_quan_he {
+  id_mqh      Int           @id @default(autoincrement())
+  ten_quan_he String        @db.VarChar(20)
+  tnhan_nvien tnhan_nvien[]
+}
+
+model ngan_hang {
+  id_ngan_hang        Int                   @id @default(autoincrement())
+  ten_ngan_hang       String                @db.VarChar(100)
+  tai_khoan_ngan_hang tai_khoan_ngan_hang[]
+}
+
+model nhan_vien {
+  cccd                String                @id @db.Char(12)
+  ho_ten              String                @db.VarChar(100)
+  gioi_tinh           Boolean?
+  sdt                 String?               @unique @db.VarChar(15)
+  email               String?               @unique @db.VarChar(100)
+  ngay_sinh           DateTime?             @db.Date
+  dan_toc             String?               @db.VarChar(20)
+  dia_chi             String?               @db.VarChar(255)
+  chuyen_nganh        String?               @db.VarChar(100)
+  ngay_vao_lam        DateTime?             @db.Date
+  ngay_nghi_viec      DateTime?             @db.Date
+  trang_thai          String?               @db.VarChar(50)
+  so_bhxh             String?               @unique @db.VarChar(20)
+  so_bhyt             String?               @unique @db.VarChar(20)
+  id_pb               String?               @db.VarChar(5)
+  id_tai_khoan        Int?                  @unique
+  phong_ban           phong_ban?            @relation(fields: [id_pb], references: [id_pb], onDelete: NoAction, onUpdate: NoAction)
+  tai_khoan           tai_khoan?            @relation(fields: [id_tai_khoan], references: [id_tai_khoan], onDelete: NoAction, onUpdate: NoAction)
+  quyet_dinh_nhan_su  quyet_dinh_nhan_su[]
+  tai_khoan_ngan_hang tai_khoan_ngan_hang[]
+  tnhan_nvien         tnhan_nvien[]
+}
+
+model phong_ban {
+  id_pb     String      @id @db.VarChar(5)
+  ten_pb    String      @db.VarChar(100)
+  nhan_vien nhan_vien[]
+}
+
+model quyet_dinh_nhan_su {
+  so_quyet_dinh    String     @id @db.VarChar(50)
+  cccd             String?    @db.Char(12)
+  loai_quyet_dinh  String     @db.VarChar(50)
+  id_bac_luong_moi String?    @db.Char(5)
+  id_chuc_vu_moi   String?    @db.VarChar(5)
+  ngay_hieu_luc    DateTime   @db.Date
+  ngay_het_han     DateTime?  @db.Date
+  nguoi_ky         String?    @db.VarChar(100)
+  trang_thai       String?    @default("HIEU_LUC") @db.VarChar(20)
+  nhan_vien        nhan_vien? @relation(fields: [cccd], references: [cccd], onDelete: NoAction, onUpdate: NoAction)
+  bac_luong        bac_luong? @relation(fields: [id_bac_luong_moi, id_chuc_vu_moi], references: [id_bac_luong, id_chuc_vu], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model tai_khoan {
+  id_tai_khoan      Int        @id @default(autoincrement())
+  ten_tai_khoan     String     @unique @db.VarChar(50)
+  mat_khau          String     @db.VarChar(255)
+  trang_thai        String?    @default("HOATDONG") @db.VarChar(20)
+  dang_nhap_lan_dau Boolean?   @default(true)
+  id_vai_tro        Int?
+  nhan_vien         nhan_vien?
+  vai_tro           vai_tro?   @relation(fields: [id_vai_tro], references: [id_vai_tro], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model tai_khoan_ngan_hang {
+  stk          String     @id @db.VarChar(30)
+  chi_nhanh    String?    @db.VarChar(100)
+  ngay_mo_the  DateTime?  @db.Date
+  trang_thai   String?    @db.VarChar(20)
+  id_ngan_hang Int?
+  cccd         String?    @db.Char(12)
+  nhan_vien    nhan_vien? @relation(fields: [cccd], references: [cccd], onDelete: NoAction, onUpdate: NoAction)
+  ngan_hang    ngan_hang? @relation(fields: [id_ngan_hang], references: [id_ngan_hang], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model than_nhan {
+  ma_dinh_danh String        @id @db.Char(12)
+  ten_tn       String        @db.VarChar(100)
+  ngay_sinh    DateTime?     @db.Date
+  tnhan_nvien  tnhan_nvien[]
+}
+
+model tnhan_nvien {
+  cccd         String       @db.Char(12)
+  ma_dinh_danh String       @db.Char(12)
+  id_mqh       Int?
+  nhan_vien    nhan_vien    @relation(fields: [cccd], references: [cccd], onDelete: NoAction, onUpdate: NoAction)
+  moi_quan_he  moi_quan_he? @relation(fields: [id_mqh], references: [id_mqh], onDelete: NoAction, onUpdate: NoAction)
+  than_nhan    than_nhan    @relation(fields: [ma_dinh_danh], references: [ma_dinh_danh], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([cccd, ma_dinh_danh])
+}
+
+model vai_tro {
+  id_vai_tro  Int         @id @default(autoincrement())
+  ten_vai_tro String      @db.VarChar(50)
+  tai_khoan   tai_khoan[]
+}

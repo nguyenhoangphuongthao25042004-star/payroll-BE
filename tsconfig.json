@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",  // để map ra ts thành js
+    "esModuleInterop": true,
+    "target": "es6",  // TypeScript sẽ compile ra JavaScript ES6
+    "sourceMap": true,  // có cái này để biết đường dẫn mà code bien dịch ra js
+    "skipLibCheck": true,
+
+    "rootDir": "./src",  // Chỉ cho phép bien dịch ts trong thư mục src
+    "outDir": "./dist", // Thư mục mà hệ thống bỏ vào khi biên dịch từ ts sang js
+    "forceConsistentCasingInFileNames": true,
+
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["prisma.config.ts", "dist"]
+}

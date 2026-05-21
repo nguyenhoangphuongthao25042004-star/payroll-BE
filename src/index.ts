@@ -6,7 +6,7 @@ import nhanVienRoutes from './routes/nhanvienRoutes';
 import cors from 'cors';
 
 
-const app = express();  // Khai báo đối tượng app từ express
+const app = express();  // Khai báo đối tượng app từ expresssss
 
 const PORT = process.env.PORT || 4000; // Khai báo PORT dùng cho server
 
